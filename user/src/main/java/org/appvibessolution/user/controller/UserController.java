@@ -11,7 +11,7 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping(value = "api/v1/users")
+@RequestMapping(value = "api/v1/user")
 public class UserController {
 
     @Autowired
@@ -54,28 +54,6 @@ public class UserController {
     public Boolean deleteUser(@PathVariable String id){
         return userService.deleteUser(id);
     }
-
-    // ------------  Authentication (Login & Register) ------------
-
-    // Register new user
-    @PostMapping("/auth/create")
-    public CreateUserDTO createUser(@RequestBody CreateUserDTO userDTO) {
-        return userService.createUser(userDTO);
-    }
-
-    // Login user, return JWT token
-    @GetMapping("/auth/login")
-    public LoginUserDTO login(@RequestBody LoginUserDTO userDTO) {
-        return userService.loginUser(userDTO);
-    }
-
-    // Invalidate token (optional)
-    @PostMapping("/auth/logout")
-    public String logout() {
-        return userService.logoutUser();
-    }
-
-    // Refresh JWT token (optional)
 
     // ------------ User Search / Discovery ------------
 

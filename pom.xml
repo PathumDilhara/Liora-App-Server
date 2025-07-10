@@ -19,6 +19,8 @@
 
   <modules>
     <module>user</module>
+      <module>eureka</module>
+    <module>apigateway</module>
   </modules>
 
   <!--  Need when building the project with maven-->
