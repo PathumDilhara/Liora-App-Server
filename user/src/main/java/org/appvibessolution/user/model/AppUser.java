@@ -16,28 +16,45 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(
+        name = "users",
+        indexes = {
+                @Index(name = "idx_users_email", columnList = "email"),
+                @Index(name = "idx_users_city", columnList = "city")
+        })
 public class AppUser {
     @Id
     @GeneratedValue()
     @UuidGenerator
-    @Column(updatable = false, nullable = false,unique = true, length = 36)
+    @Column(updatable = false, nullable = false, unique = true, length = 36)
     private String userId;
 
+    @Column(nullable = false, length = 50)
     private String firstName;
+
+    @Column(nullable = false, length = 50)
     private String lastName;
 
     @Email
+    @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(nullable = false, length = 255)
     private String password;
 
+    @Column(nullable = false, columnDefinition = "VARCHAR(10) CHECK (gender IN ('MALE', 'FEMALE'))")
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
     private LocalDate dateOfBirth;
+
     private String bio;
+
     private String profilePictureUrl;
+
+    @Column(length = 100)
     private String city;
+
     private String country;
 
     @Enumerated(EnumType.STRING)
@@ -47,7 +64,7 @@ public class AppUser {
     private LocalDateTime updatedAt;
 
     @PrePersist
-protected void onCreate() {
+    protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
