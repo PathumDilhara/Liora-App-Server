@@ -2,7 +2,6 @@ package org.appvibessolution.user.controller;
 
 import org.appvibessolution.user.dto.CreateUserDTO;
 import org.appvibessolution.user.dto.GetUserDTO;
-import org.appvibessolution.user.dto.LoginUserDTO;
 import org.appvibessolution.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +13,12 @@ import java.util.List;
 @RequestMapping(value = "api/v1/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    // Constructor injection instead autowired
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     // ------------  User Profile Management ------------
 

@@ -4,11 +4,10 @@ import jakarta.transaction.Transactional;
 import org.appvibessolution.user.dto.CreateUserDTO;
 import org.appvibessolution.user.dto.GetUserDTO;
 import org.appvibessolution.user.dto.LoginUserDTO;
-import org.appvibessolution.user.model.User;
+import org.appvibessolution.user.model.AppUser;
 import org.appvibessolution.user.repo.UserRepo;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,35 +16,38 @@ import java.util.List;
 @Transactional
 public class UserService {
 
-    @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private ModelMapper modelMapper;
+    private final UserRepo userRepo;
+    private final ModelMapper modelMapper;
+
+    public UserService(UserRepo userRepo, ModelMapper modelMapper) {
+        this.userRepo = userRepo;
+        this.modelMapper = modelMapper;
+    }
 
     // ------------  User Profile Management ------------
 
     public List<GetUserDTO> getAllUser(){
-        List<User> users = userRepo.findAll();
+        List<AppUser> users = userRepo.findAll();
         return  modelMapper.map(users, new TypeToken<List<GetUserDTO> >(){}.getType());
     }
 
     public GetUserDTO getPublicUserById(String userId){
-        User user = userRepo.findById(userId).orElse(null);
+        AppUser user = userRepo.findById(userId).orElse(null);
         return  modelMapper.map(user, new TypeToken<GetUserDTO>(){}.getType());
     }
 
     public List<CreateUserDTO> searchUsers(String searchTerm) {
-        List<User> users = userRepo.searchUsers(searchTerm);
+        List<AppUser> users = userRepo.searchUsers(searchTerm);
         return modelMapper.map(users, new TypeToken<List<CreateUserDTO>>(){}.getType());
     }
 
     public CreateUserDTO getCurrentUser(String userId){
-        User user = userRepo.findById(userId).orElse(null);
+        AppUser user = userRepo.findById(userId).orElse(null);
         return modelMapper.map(user, new TypeToken<CreateUserDTO>(){}.getType());
     }
 
     public String updateUser(CreateUserDTO userDTO){
-        return userRepo.save(modelMapper.map(userDTO, User.class)).toString();
+        return userRepo.save(modelMapper.map(userDTO, AppUser.class)).toString();
     }
 
     public Boolean deleteUser(String userId){
@@ -56,7 +58,7 @@ public class UserService {
     // ------------  Authentication (Login & Register) ------------
 
     public CreateUserDTO createUser(CreateUserDTO userDTO) {
-        userRepo.save(modelMapper.map(userDTO, User.class));
+        userRepo.save(modelMapper.map(userDTO, AppUser.class));
         return userDTO;
     }
 
@@ -75,7 +77,7 @@ public class UserService {
     // ------------ User Search / Discovery ------------
 
     public List<CreateUserDTO> getRandomUser() {
-        List<User> userList = userRepo.findAll();
+        List<AppUser> userList = userRepo.findAll();
         return  modelMapper.map(userList, new TypeToken<List<CreateUserDTO>>(){}.getType());
     }
 }

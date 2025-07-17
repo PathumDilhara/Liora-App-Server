@@ -3,7 +3,6 @@ package org.appvibessolution.user.controller;
 import org.appvibessolution.user.dto.CreateUserDTO;
 import org.appvibessolution.user.dto.LoginUserDTO;
 import org.appvibessolution.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
@@ -11,8 +10,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/api/v1/user/auth")
 public class AuthController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public AuthController(UserService userService) {
+        this.userService = userService;
+    }
 
     // ------------  Authentication (Login & Register) ------------
 
