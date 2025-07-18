@@ -19,7 +19,7 @@
 
   <modules>
     <module>user</module>
-      <module>eureka</module>
+    <module>eureka</module>
     <module>apigateway</module>
   </modules>
 

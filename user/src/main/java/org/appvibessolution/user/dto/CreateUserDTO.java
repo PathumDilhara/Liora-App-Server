@@ -23,5 +23,4 @@ public class CreateUserDTO {
     private String country;
     private AccountStatus state;
     private String bio;
-
 }

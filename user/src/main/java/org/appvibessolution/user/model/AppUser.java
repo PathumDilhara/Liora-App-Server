@@ -60,6 +60,15 @@ public class AppUser {
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
 
+    private LocalDateTime subscriptionExpiryDate;
+
+    @Column(nullable = false)
+    private boolean accountLocked = false; // true if locked
+    private LocalDateTime lockTime; // store when account was locked
+    private int failedLoginAttempts=0;
+
+
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

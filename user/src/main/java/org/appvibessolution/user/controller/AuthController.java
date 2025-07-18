@@ -2,7 +2,7 @@ package org.appvibessolution.user.controller;
 
 import org.appvibessolution.user.dto.CreateUserDTO;
 import org.appvibessolution.user.dto.LoginUserDTO;
-import org.appvibessolution.user.service.UserService;
+import org.appvibessolution.user.service.AuthenticationService;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
@@ -10,30 +10,22 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/api/v1/user/auth")
 public class AuthController {
 
-    private final UserService userService;
+    private final AuthenticationService authenticationService;
 
-    public AuthController(UserService userService) {
-        this.userService = userService;
+    public AuthController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
-
-    // ------------  Authentication (Login & Register) ------------
 
     // Register new user
     @PostMapping("/create")
-    public CreateUserDTO createUser(@RequestBody CreateUserDTO userDTO) {
-        return userService.createUser(userDTO);
+    public String createUser(@RequestBody CreateUserDTO userDTO) {
+        return authenticationService.createUser(userDTO);
     }
 
     // Login user, return JWT token
-    @GetMapping("/login")
-    public LoginUserDTO login(@RequestBody LoginUserDTO userDTO) {
-        return userService.loginUser(userDTO);
-    }
-
-    // Logout user, Invalidate token (optional)
-    @PostMapping("/logout")
-    public String logout() {
-        return userService.logoutUser();
+    @PostMapping("/login")
+    public String login(@RequestBody LoginUserDTO userDTO) {
+        return authenticationService.loginUser(userDTO);
     }
 
     // Refresh JWT token (optional)

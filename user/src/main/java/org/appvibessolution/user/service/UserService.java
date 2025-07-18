@@ -3,7 +3,6 @@ package org.appvibessolution.user.service;
 import jakarta.transaction.Transactional;
 import org.appvibessolution.user.dto.CreateUserDTO;
 import org.appvibessolution.user.dto.GetUserDTO;
-import org.appvibessolution.user.dto.LoginUserDTO;
 import org.appvibessolution.user.model.AppUser;
 import org.appvibessolution.user.repo.UserRepo;
 import org.modelmapper.ModelMapper;
@@ -16,10 +15,15 @@ import java.util.List;
 @Transactional
 public class UserService {
 
+
     private final UserRepo userRepo;
     private final ModelMapper modelMapper;
 
-    public UserService(UserRepo userRepo, ModelMapper modelMapper) {
+
+    public UserService(
+            UserRepo userRepo,
+            ModelMapper modelMapper
+            ) {
         this.userRepo = userRepo;
         this.modelMapper = modelMapper;
     }
@@ -53,25 +57,6 @@ public class UserService {
     public Boolean deleteUser(String userId){
         userRepo.deleteById(userId);
         return true;
-    }
-
-    // ------------  Authentication (Login & Register) ------------
-
-    public CreateUserDTO createUser(CreateUserDTO userDTO) {
-        userRepo.save(modelMapper.map(userDTO, AppUser.class));
-        return userDTO;
-    }
-
-    public LoginUserDTO loginUser(LoginUserDTO loginUserDTO) {
-        userRepo.findById(loginUserDTO.getEmail());
-        if(loginUserDTO.getPassword().equals(searchUsers(loginUserDTO.getEmail()).get(0).getPassword())){
-            return loginUserDTO;
-        }
-        return null;
-    }
-
-    public String logoutUser() {
-        return "User logged out";
     }
 
     // ------------ User Search / Discovery ------------
