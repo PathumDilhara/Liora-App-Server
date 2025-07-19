@@ -1,6 +1,5 @@
 package org.appvibessolution.user.exception;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -85,13 +84,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<CustomResponse<Object>> handleAccountAlreadyVerifiedException(AccountAlreadyVerifiedException ex){
         CustomResponse<Object> response = new CustomResponse<>(false, ex.getMessage(), null);
         return new ResponseEntity<>(response, HttpStatus.CONFLICT ); // 409
-    }
-
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<CustomResponse<Object>> handleExpiredJwtException(ExpiredJwtException ex) {
-
-        CustomResponse<Object> response = new CustomResponse<>(false, ex.getMessage(), "JWT_EXPIRED");
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED); // 401
     }
 
 }
