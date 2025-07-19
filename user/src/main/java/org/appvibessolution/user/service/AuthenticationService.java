@@ -2,6 +2,9 @@ package org.appvibessolution.user.service;
 
 import org.appvibessolution.user.dto.CreateUserDTO;
 import org.appvibessolution.user.dto.LoginUserDTO;
+import org.appvibessolution.user.exception.InvalidCredentialException;
+import org.appvibessolution.user.exception.UserAccountLockException;
+import org.appvibessolution.user.exception.UserNotFoundException;
 import org.appvibessolution.user.model.AppUser;
 import org.appvibessolution.user.repo.UserRepo;
 import org.modelmapper.ModelMapper;
@@ -50,22 +53,22 @@ public class AuthenticationService {
 
     public String loginUser(LoginUserDTO userDTO) {
 
-        System.out.println("########## : "+ userDTO.getEmail() + userDTO.getPassword());
+        // System.out.println("########## : "+ userDTO.getEmail() + userDTO.getPassword());
 
         AppUser user = userRepo.findByEmail(userDTO.getEmail()).orElseThrow(
-                ()->new RuntimeException("User not found"));
+                ()->new UserNotFoundException("User not found"));
 
         if(user.isAccountLocked()){
             Duration lockDuration = Duration.between(user.getLockTime(), LocalDateTime.now());
 
-            if(lockDuration.toMinutes() >= 10){ // TODO : testing
+            if(lockDuration.toMinutes() >= 10){
                 // Auto unlock & save in database
                 user.setAccountLocked(false);
                 user.setFailedLoginAttempts(0);
                 user.setLockTime(null);
                 userRepo.save(user);
             } else {
-                throw new LockedException("Account locked. Try again later.");
+                throw new UserAccountLockException("Account locked. Try again after 10 minutes.");
             }
         }
 
@@ -97,7 +100,7 @@ public class AuthenticationService {
             int attempts = user.getFailedLoginAttempts() + 1;
             user.setFailedLoginAttempts(attempts);
 
-            System.out.println("############### attempts : " +attempts);
+            // System.out.println("############### attempts : " +attempts);
 
             if (attempts >= 5) {
                 user.setAccountLocked(true);
@@ -105,10 +108,16 @@ public class AuthenticationService {
             }
 
             userRepo.save(user);
-            throw new RuntimeException("Invalid credentials");
+            throw new InvalidCredentialException("Invalid credentials", attempts);
         }
 
         return  "Login fails, please try again";
+    }
+
+    public String deleteUserById(String id){
+        AppUser user = userRepo.findById(id).orElseThrow(()-> new UserNotFoundException("USer not found"));
+        userRepo.deleteById(id);
+        return "User : " +user.getFirstName() + " " + user.getLastName() + " with id : " + user.getUserId();
     }
 }
 
