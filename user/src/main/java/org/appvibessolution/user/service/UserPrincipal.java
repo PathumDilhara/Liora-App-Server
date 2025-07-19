@@ -1,5 +1,6 @@
 package org.appvibessolution.user.service;
 
+import org.appvibessolution.user.enums.AccountStatus;
 import org.appvibessolution.user.model.AppUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -64,7 +65,9 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return (user.getAccountStatus() != AccountStatus.SUSPENDED) &&
+                (user.getAccountStatus() !=AccountStatus.BANNED) &&
+                (user.getAccountStatus() !=AccountStatus.DELETED);
     }
 
     // Subscription info

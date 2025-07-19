@@ -58,7 +58,7 @@ public class AppUser {
     private String country;
 
     @Enumerated(EnumType.STRING)
-    private AccountStatus accountStatus = AccountStatus.ACTIVE;
+    private AccountStatus accountStatus = AccountStatus.PENDING_VERIFICATION;
 
     private LocalDateTime subscriptionExpiryDate;
 
@@ -67,7 +67,11 @@ public class AppUser {
     private LocalDateTime lockTime; // store when account was locked
     private int failedLoginAttempts=0;
 
+    @Column(name = "verification_code")
+    private String verificationCode;
 
+    @Column(name = "verification_expiration")
+    private LocalDateTime verificationExpirationAt;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

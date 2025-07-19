@@ -1,5 +1,6 @@
 package org.appvibessolution.user.config;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,29 +36,39 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
-        String token =null;
-        String userName = null;
+            @NonNull FilterChain filterChain
+    ) throws ServletException, IOException {
 
-        if(authHeader != null && authHeader.startsWith("Bearer ")){
-            token =authHeader.substring(7);
-            userName = jwtService.extractUserName(token);
-        }
+        try {
+            String authHeader = request.getHeader("Authorization");
+            String token = null;
+            String userName = null;
 
-        if(userName != null && SecurityContextHolder.getContext().getAuthentication() ==null){
-            UserDetails userDetails =
-                    applicationContext.getBean(MyUserDetailsService.class).loadUserByUsername(userName);
-
-            if(jwtService.validateToken(token, userDetails)){
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities()
-                );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                token = authHeader.substring(7);
+                userName = jwtService.extractUserName(token);
             }
+
+            if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails =
+                        applicationContext.getBean(MyUserDetailsService.class).loadUserByUsername(userName);
+
+                if (jwtService.validateToken(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            }
+            filterChain.doFilter(request, response);
+
+        } catch (ExpiredJwtException ex){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            String json = "{\"success\":false,\"message\":\"JWT token expired.\",\"errorCode\":\"JWT_EXPIRED\"}";
+            response.getWriter().write(json);
+            response.getWriter().flush();
         }
-        filterChain.doFilter(request, response);
     }
 }

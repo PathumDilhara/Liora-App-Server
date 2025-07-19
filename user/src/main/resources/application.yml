@@ -15,6 +15,21 @@ spring:
 
     show-sql: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: npathumdilhara@gmail.com
+    password: kivttohiixvteqyn
+
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: smtp.gmail.com
+
 server:
   port: 0
 
